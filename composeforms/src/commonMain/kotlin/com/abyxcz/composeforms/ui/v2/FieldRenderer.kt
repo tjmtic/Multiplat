@@ -38,7 +38,11 @@ import com.abyxcz.v2core.core.model.PasswordField
 import com.abyxcz.v2core.core.model.TextField
 
 @Composable
-fun FieldRenderer(field: FormField<*>, context: FormContext) {
+@Suppress("ktlint:standard:function-naming")
+fun FieldRenderer(
+    field: FormField<*>,
+    context: FormContext,
+) {
     when (field) {
         is TextField -> RenderTextField(field, context)
         is PasswordField -> RenderPasswordField(field, context)
@@ -48,7 +52,11 @@ fun FieldRenderer(field: FormField<*>, context: FormContext) {
 }
 
 @Composable
-fun RenderTextField(field: TextField, context: FormContext) {
+@Suppress("ktlint:standard:function-naming")
+fun RenderTextField(
+    field: TextField,
+    context: FormContext,
+) {
     val value = context.values.value[field.name] as? String ?: ""
     val error = context.errors.value[field.name]
 
@@ -72,7 +80,11 @@ fun RenderTextField(field: TextField, context: FormContext) {
 }
 
 @Composable
-fun RenderPasswordField(field: PasswordField, context: FormContext) {
+@Suppress("ktlint:standard:function-naming")
+fun RenderPasswordField(
+    field: PasswordField,
+    context: FormContext,
+) {
     var isPasswordVisible by remember { mutableStateOf(false) }
     val value = context.values.value[field.name] as? String ?: ""
     val error = context.errors.value[field.name]
@@ -105,7 +117,11 @@ fun RenderPasswordField(field: PasswordField, context: FormContext) {
 }
 
 @Composable
-fun RenderCheckboxField(field: CheckboxField, context: FormContext) {
+@Suppress("ktlint:standard:function-naming")
+fun RenderCheckboxField(
+    field: CheckboxField,
+    context: FormContext,
+) {
     val checked = context.values.value[field.name] as? Boolean ?: false
     val error = context.errors.value[field.name]
 
@@ -138,7 +154,11 @@ fun RenderCheckboxField(field: CheckboxField, context: FormContext) {
 }
 
 @Composable
-fun <T> RenderDropdownField(field: DropdownField<T>, context: FormContext) {
+@Suppress("ktlint:standard:function-naming")
+fun <T> RenderDropdownField(
+    field: DropdownField<T>,
+    context: FormContext,
+) {
     var expanded by remember { mutableStateOf(false) }
 
     val selectedValue = context.values.value[field.name] as? T

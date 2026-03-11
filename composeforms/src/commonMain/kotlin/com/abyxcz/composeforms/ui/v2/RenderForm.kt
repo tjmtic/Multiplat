@@ -17,6 +17,7 @@ import com.abyxcz.v2core.core.model.FormSchema
 import com.abyxcz.v2core.core.model.validateForm
 
 @Composable
+@Suppress("ktlint:standard:function-naming")
 fun RenderForm(
     form: FormSchema,
     context: FormContext = rememberFormContext(form),
@@ -37,6 +38,7 @@ fun RenderForm(
 }
 
 @Composable
+@Suppress("ktlint:standard:function-naming")
 fun rememberFormContext(form: FormSchema): FormContext =
     remember {
         FormContext(
@@ -48,6 +50,7 @@ fun rememberFormContext(form: FormSchema): FormContext =
     }
 
 @Composable
+@Suppress("ktlint:standard:function-naming")
 fun FormSubmitButton(
     label: String,
     form: FormSchema,

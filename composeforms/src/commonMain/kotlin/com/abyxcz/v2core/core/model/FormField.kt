@@ -1,7 +1,6 @@
 package com.abyxcz.v2core.core.model
 
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
 
 typealias FormState = MutableState<Map<String, Any?>>
 
@@ -35,21 +34,31 @@ abstract class FormField<T>(
     }
 }
 
-class FloatField(name: String) : FormField<Float>(name) {
+class FloatField(
+    name: String,
+) : FormField<Float>(name) {
     var placeholder: Float = 0F
 }
 
-class TextField(name: String) : FormField<String>(name) {
+class TextField(
+    name: String,
+) : FormField<String>(name) {
     var placeholder: String = ""
     var minLength: Int? = null
 }
 
-class PasswordField(name: String) : FormField<String>(name) {
+class PasswordField(
+    name: String,
+) : FormField<String>(name) {
     var minLength: Int? = null
 }
 
-class CheckboxField(name: String) : FormField<Boolean>(name)
+class CheckboxField(
+    name: String,
+) : FormField<Boolean>(name)
 
-class DropdownField<T>(name: String) : FormField<T>(name) {
+class DropdownField<T>(
+    name: String,
+) : FormField<T>(name) {
     var options: List<Pair<String, T>> = emptyList()
 }

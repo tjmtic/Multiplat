@@ -1,6 +1,8 @@
 package com.abyxcz.v2core.core.model
 
-class FormSection(val title: String) {
+class FormSection(
+    val title: String,
+) {
     val fields = mutableListOf<FormField<*>>()
 }
 

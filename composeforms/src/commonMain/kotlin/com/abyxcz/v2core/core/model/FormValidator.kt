@@ -1,10 +1,14 @@
 package com.abyxcz.v2core.core.model
 
-import androidx.compose.runtime.MutableState
+data class FieldError(
+    val fieldName: String,
+    val errors: List<String>,
+)
 
-data class FieldError(val fieldName: String, val errors: List<String>)
-
-fun validateForm(form: FormSchema, context: FormContext): Boolean {
+fun validateForm(
+    form: FormSchema,
+    context: FormContext,
+): Boolean {
     val newErrors = mutableMapOf<String, String?>()
 
     form.sections.forEach { section ->
@@ -30,8 +34,8 @@ interface ValidationRule<T> {
     fun validate(value: T?): String? // Return error message or null if valid
 }
 
-class RequiredRule<T>(private val message: String = "Required") : ValidationRule<T> {
-    override fun validate(value: T?): String? {
-        return if (value == null || (value is String && value.isBlank())) message else null
-    }
+class RequiredRule<T>(
+    private val message: String = "Required",
+) : ValidationRule<T> {
+    override fun validate(value: T?): String? = if (value == null || (value is String && value.isBlank())) message else null
 }

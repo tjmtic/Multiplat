@@ -34,6 +34,7 @@ import com.abyxcz.composeforms.model.InternalFormApi
 
 @InternalFormApi
 @Composable
+@Suppress("ktlint:standard:function-naming")
 fun <T : Any> RenderInputField(
     field: InputFieldDescriptor<T>,
     fieldStates: MutableMap<String, Any?>,
@@ -58,6 +59,7 @@ fun <T : Any> RenderInputField(
             val stateVal = (field.binding?.value ?: fieldStates[field.fieldId] ?: field.initialValue)
 
             val typedField = field as CustomComposableFieldDescriptor<T>
+
             @Suppress("UNCHECKED_CAST")
             val typedState = stateVal as MutableState<T>
             typedField.content(typedState)
@@ -202,6 +204,7 @@ fun <T : Any> RenderInputField(
         is InputFieldDescriptor.DropdownFieldDescriptor<*> -> {
             var expanded by remember { mutableStateOf(false) }
             val selectedOption = field.binding?.value ?: fieldStates[field.fieldId] ?: field.initialValue
+
             @Suppress("UNCHECKED_CAST")
             val dropdownField = field as InputFieldDescriptor.DropdownFieldDescriptor<Enum<*>>
 

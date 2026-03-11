@@ -11,13 +11,19 @@ annotation class FormDsl
 class FormBuilder {
     private val schema = FormSchema()
 
-    fun section(title: String, block: SectionBuilder.() -> Unit) {
+    fun section(
+        title: String,
+        block: SectionBuilder.() -> Unit,
+    ) {
         val sectionBuilder = SectionBuilder(title)
         sectionBuilder.block()
         schema.sections += sectionBuilder.build()
     }
 
-    fun submitButton(label: String = "Submit", block: SubmitButtonBuilder.() -> Unit = {}) {
+    fun submitButton(
+        label: String = "Submit",
+        block: SubmitButtonBuilder.() -> Unit = {},
+    ) {
         val builder =
             SubmitButtonBuilder().apply {
                 this.label = label
@@ -33,25 +39,39 @@ class FormBuilder {
  * DSL Builder for a form section. Groups related fields together under a single title.
  */
 @FormDsl
-class SectionBuilder(private val title: String) {
+class SectionBuilder(
+    private val title: String,
+) {
     private val fields = mutableListOf<FormField<*>>()
 
-    fun text(name: String, block: TextField.() -> Unit = {}) {
+    fun text(
+        name: String,
+        block: TextField.() -> Unit = {},
+    ) {
         val field = TextField(name).apply(block)
         fields += field
     }
 
-    fun float(name: String, block: FloatField.() -> Unit = {}) {
+    fun float(
+        name: String,
+        block: FloatField.() -> Unit = {},
+    ) {
         val field = FloatField(name).apply(block)
         fields += field
     }
 
-    fun password(name: String, block: PasswordField.() -> Unit = {}) {
+    fun password(
+        name: String,
+        block: PasswordField.() -> Unit = {},
+    ) {
         val field = PasswordField(name).apply(block)
         fields += field
     }
 
-    fun checkbox(name: String, block: CheckboxField.() -> Unit = {}) {
+    fun checkbox(
+        name: String,
+        block: CheckboxField.() -> Unit = {},
+    ) {
         val field = CheckboxField(name).apply(block)
         fields += field
     }

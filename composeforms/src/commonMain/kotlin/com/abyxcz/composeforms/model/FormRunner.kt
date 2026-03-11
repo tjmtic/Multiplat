@@ -7,8 +7,7 @@ class FormRunner<ResultType>(
     private val schema: FormSchema<ResultType>,
     val bindingMap: Map<String, MutableState<*>>,
 ) {
-    fun currentValues(): Map<String, Any?> =
-        bindingMap.mapValues { it.value.value }
+    fun currentValues(): Map<String, Any?> = bindingMap.mapValues { it.value.value }
 
     fun fieldErrors(): Map<String, List<String>> {
         val values = currentValues()
@@ -21,8 +20,7 @@ class FormRunner<ResultType>(
                 @Suppress("UNCHECKED_CAST")
                 val errors = validateField(field as InputFieldDescriptor<Any?>, value)
                 field.fieldId to errors
-            }
-            .filterValues { it.isNotEmpty() }
+            }.filterValues { it.isNotEmpty() }
     }
 
     fun groupErrors(): MutableList<FormValidationError> {
@@ -34,7 +32,8 @@ class FormRunner<ResultType>(
                 val value = values[field.fieldId]
                 val messages =
                     (field as? InputFieldDescriptor<Any?>)
-                        ?.validators?.mapNotNull { it(value) }
+                        ?.validators
+                        ?.mapNotNull { it(value) }
                         .orEmpty()
                 if (messages.isNotEmpty()) {
                     errors += FormValidationError.FieldError(field.fieldId, messages)
@@ -50,11 +49,9 @@ class FormRunner<ResultType>(
         return errors
     }
 
-    fun schemaErrors(): List<String> =
-        schema.formValidator?.invoke(currentValues()) ?: emptyList()
+    fun schemaErrors(): List<String> = schema.formValidator?.invoke(currentValues()) ?: emptyList()
 
-    fun allErrors(): Pair<Map<String, List<String>>, List<String>> =
-        fieldErrors() to schemaErrors()
+    fun allErrors(): Pair<Map<String, List<String>>, List<String>> = fieldErrors() to schemaErrors()
 
     fun isValid(): Boolean = fieldErrors().isEmpty() && groupErrors().isEmpty() && schemaErrors().isEmpty()
 
@@ -96,7 +93,10 @@ class FormRunner<ResultType>(
     }
 }
 
-fun <T> validateField(field: InputFieldDescriptor<T>, value: Any?): List<String> {
+fun <T> validateField(
+    field: InputFieldDescriptor<T>,
+    value: Any?,
+): List<String> {
     @Suppress("UNCHECKED_CAST")
     return field.validators.mapNotNull { rule ->
         rule.invoke(value as? T ?: field.initialValue)

@@ -23,6 +23,7 @@ import com.abyxcz.composeforms.model.InternalFormApi
 @OptIn(InternalFormApi::class)
 @ExperimentalFormApi
 @Composable
+@Suppress("ktlint:standard:function-naming")
 fun <ResultType> FormSchemaRenderer(
     schema: FormSchema<ResultType>,
     fieldStates: MutableMap<String, Any?>,
