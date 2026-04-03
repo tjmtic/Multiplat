@@ -89,6 +89,14 @@ class SectionBuilder(
         fields += field
     }
 
+    fun slider(
+        name: String,
+        block: SliderField.() -> Unit = {},
+    ) {
+        val field = SliderField(name).apply(block)
+        fields += field
+    }
+
     fun build(): FormSection = FormSection(title).also { it.fields += fields }
 }
 

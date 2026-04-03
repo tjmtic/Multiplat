@@ -31,6 +31,7 @@ kotlin {
             implementation(libs.androidx.activity.compose)
         }
         commonMain.dependencies {
+            implementation(project(":composeforms"))
             implementation(compose.runtime)
             implementation(compose.foundation)
             implementation(compose.material3)

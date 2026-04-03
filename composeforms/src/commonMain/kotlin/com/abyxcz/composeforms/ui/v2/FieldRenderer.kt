@@ -1,5 +1,7 @@
 package com.abyxcz.composeforms.ui.v2
 
+import androidx.compose.material3.Slider
+
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -35,6 +37,7 @@ import com.abyxcz.v2core.core.model.DropdownField
 import com.abyxcz.v2core.core.model.FormContext
 import com.abyxcz.v2core.core.model.FormField
 import com.abyxcz.v2core.core.model.PasswordField
+import com.abyxcz.v2core.core.model.SliderField
 import com.abyxcz.v2core.core.model.TextField
 
 @Composable
@@ -48,6 +51,7 @@ fun FieldRenderer(
         is PasswordField -> RenderPasswordField(field, context)
         is CheckboxField -> RenderCheckboxField(field, context)
         is DropdownField -> RenderDropdownField(field, context)
+        is SliderField -> RenderSliderField(field, context)
     }
 }
 
@@ -195,6 +199,36 @@ fun <T> RenderDropdownField(
         }
 
         context.errors.value[field.name]?.let { error ->
+            Text(error, color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodySmall)
+        }
+    }
+}
+
+@Composable
+@Suppress("ktlint:standard:function-naming")
+fun RenderSliderField(
+    field: SliderField,
+    context: FormContext,
+) {
+    val value = context.values.value[field.name] as? Float ?: field.value ?: 0f
+    val error = context.errors.value[field.name]
+
+    Column(modifier = Modifier.fillMaxWidth()) {
+        Text(text = field.label, style = MaterialTheme.typography.labelLarge)
+        Slider(
+            value = value,
+            onValueChange = {
+                context.values.value =
+                    context.values.value.toMutableMap().apply {
+                        put(field.name, it)
+                    }
+            },
+            valueRange = field.valueRange,
+            steps = field.steps,
+            modifier = Modifier.fillMaxWidth(),
+        )
+
+        if (error != null) {
             Text(error, color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodySmall)
         }
     }

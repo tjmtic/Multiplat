@@ -62,3 +62,10 @@ class DropdownField<T>(
 ) : FormField<T>(name) {
     var options: List<Pair<String, T>> = emptyList()
 }
+
+class SliderField(
+    name: String,
+) : FormField<Float>(name) {
+    var valueRange: ClosedFloatingPointRange<Float> = 0f..100f
+    var steps: Int = 0
+}
