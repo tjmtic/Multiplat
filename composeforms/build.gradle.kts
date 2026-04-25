@@ -10,6 +10,7 @@ plugins {
 
 kotlin {
     androidTarget {
+        publishLibraryVariants("release")
         compilerOptions {
             jvmTarget.set(JvmTarget.JVM_11)
         }
@@ -52,12 +53,22 @@ android {
     }
 }
 
+group = "com.abyxcz"
+version = project.findProperty("libVersion")?.toString() ?: "1.0.0-SNAPSHOT"
+
 publishing {
     publications {
-        create<MavenPublication>("maven") {
-            groupId = "com.abyxcz"
-            artifactId = "composeforms"
-            version = "1.0.0"
+        // The KMP plugin automatically creates publications for each target.
+        // We can further   configure them here if needed.
+    }
+    repositories {
+        maven {
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/tjmtic/Multiplat")
+            credentials {
+                username = System.getenv("GITHUB_ACTOR")
+                password = System.getenv("GITHUB_TOKEN")
+            }
         }
     }
 }
