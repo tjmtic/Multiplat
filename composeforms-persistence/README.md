@@ -56,5 +56,5 @@ ViewModel ◀──(reconciled Map)── FormStore.get(key, schema) ─┘
 2. ✅ SQLDelight adapter (`(type, id, schemaVersion, json, updatedAt)` envelope) + platform
    drivers (`DriverFactory` expect/actual: `AndroidSqliteDriver` / `NativeSqliteDriver`).
    Build one via `createFormStore(DriverFactory(...))`.
-3. ⬜ `dbmigration` `TransformRegistry` backed by the on-device LLM, with sandbox-validate-against-
-   target-fingerprint safety loop.
+3. ✅ `:composeforms-migration` `TransformRegistry` backed by the on-device LLM (Android via
+   MediaPipe), with declarative `TransformSpec` + sandbox validation. iOS engine still TODO.

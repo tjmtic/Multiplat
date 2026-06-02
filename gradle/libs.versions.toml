@@ -15,6 +15,7 @@ kotlin = "2.1.0"
 kotlinx-serialization = "1.7.3"
 kotlinx-coroutines = "1.9.0"
 sqldelight = "2.0.2"
+mediapipe-genai = "0.10.24"
 spotless = "6.25.0"
 detekt = "1.23.6"
 
@@ -35,6 +36,7 @@ sqldelight-runtime = { module = "app.cash.sqldelight:runtime", version.ref = "sq
 sqldelight-android-driver = { module = "app.cash.sqldelight:android-driver", version.ref = "sqldelight" }
 sqldelight-native-driver = { module = "app.cash.sqldelight:native-driver", version.ref = "sqldelight" }
 sqldelight-sqlite-driver = { module = "app.cash.sqldelight:sqlite-driver", version.ref = "sqldelight" }
+mediapipe-genai = { module = "com.google.mediapipe:tasks-genai", version.ref = "mediapipe-genai" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
