@@ -1,9 +1,6 @@
 package com.abyxcz.composeforms.persistence
 
 import com.abyxcz.v2core.core.model.FormSchema
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonObject
-import kotlinx.serialization.json.jsonObject
 
 /**
  * Reference [FormStore] that keeps the serialized envelope in memory.
@@ -22,7 +19,6 @@ class InMemoryFormStore(
     )
 
     private val rows = mutableMapOf<ObjectKey, Row>()
-    private val parser = Json { ignoreUnknownKeys = true }
 
     override suspend fun put(
         key: ObjectKey,
@@ -35,7 +31,7 @@ class InMemoryFormStore(
     override suspend fun get(
         key: ObjectKey,
         schema: FormSchema,
-    ): Map<String, Any?>? = rows[key]?.let { reconcile(it, schema) }
+    ): Map<String, Any?>? = rows[key]?.let { Reconciler.reconcile(transforms, it.schemaVersion, it.json, schema) }
 
     override suspend fun getByType(
         type: String,
@@ -43,24 +39,9 @@ class InMemoryFormStore(
     ): List<Pair<ObjectKey, Map<String, Any?>>> =
         rows
             .filterKeys { it.type == type }
-            .map { (key, row) -> key to reconcile(row, schema) }
+            .map { (key, row) -> key to Reconciler.reconcile(transforms, row.schemaVersion, row.json, schema) }
 
     override suspend fun delete(key: ObjectKey) {
         rows.remove(key)
-    }
-
-    private fun reconcile(
-        row: Row,
-        schema: FormSchema,
-    ): Map<String, Any?> {
-        val stored: JsonObject = parser.parseToJsonElement(row.json).jsonObject
-        val target = schema.fingerprint()
-        val migrated =
-            if (row.schemaVersion == target) {
-                stored
-            } else {
-                transforms.find(row.schemaVersion, target)?.apply(stored) ?: stored
-            }
-        return FormValuesCodec.decode(schema, migrated)
     }
 }

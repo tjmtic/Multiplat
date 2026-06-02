@@ -4,10 +4,23 @@ plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.kotlinSerialization)
+    alias(libs.plugins.sqldelight)
     `maven-publish`
 }
 
+sqldelight {
+    databases {
+        create("FormStoreDatabase") {
+            packageName.set("com.abyxcz.composeforms.persistence.db")
+        }
+    }
+}
+
 kotlin {
+    compilerOptions {
+        // expect/actual classes (DriverFactory) are stable enough for our use; silence the Beta notice.
+        freeCompilerArgs.add("-Xexpect-actual-classes")
+    }
     androidTarget {
         publishLibraryVariants("release")
         compilerOptions {
@@ -30,9 +43,23 @@ kotlin {
             // Exposes FormSchema / FormField as part of this module's public API.
             api(projects.composeforms)
             implementation(libs.kotlinx.serialization.json)
+            implementation(libs.sqldelight.runtime)
+        }
+        androidMain.dependencies {
+            implementation(libs.sqldelight.android.driver)
+        }
+        iosMain.dependencies {
+            implementation(libs.sqldelight.native.driver)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
+        }
+        // Adapter tests run on the JVM via the in-memory JDBC driver.
+        val androidUnitTest by getting {
+            dependencies {
+                implementation(libs.sqldelight.sqlite.driver)
+                implementation(libs.kotlinx.coroutines.core)
+            }
         }
     }
 }

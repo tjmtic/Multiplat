@@ -53,6 +53,8 @@ ViewModel ◀──(reconciled Map)── FormStore.get(key, schema) ─┘
 ## Roadmap
 
 1. ✅ Core: port, fingerprint, codec, in-memory store, optional transform seam.
-2. ⬜ SQLDelight adapter (`(type, id, schemaVersion, json, updatedAt)` envelope) + platform drivers.
+2. ✅ SQLDelight adapter (`(type, id, schemaVersion, json, updatedAt)` envelope) + platform
+   drivers (`DriverFactory` expect/actual: `AndroidSqliteDriver` / `NativeSqliteDriver`).
+   Build one via `createFormStore(DriverFactory(...))`.
 3. ⬜ `dbmigration` `TransformRegistry` backed by the on-device LLM, with sandbox-validate-against-
    target-fingerprint safety loop.
