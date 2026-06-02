@@ -37,6 +37,7 @@ SqlDelightFormStore(db, registry)  ── reads now apply the validated transfor
 |---|---|
 | `LlmEngine` | text-in/text-out contract; the only platform-specific dependency |
 | `MediaPipeLlmEngine` (androidMain) | on-device inference via `com.google.mediapipe:tasks-genai` |
+| `SwiftLlmEngine` (iosMain) | bridges to a Swift-supplied generator (Foundation Models / MLX / llama.cpp) |
 | `TransformSpec` | serializable, declarative migration; `toTransform()` interprets it |
 | `diffSchemas` / `SchemaDiff` | deterministic structural delta between two `FormSchema`s |
 | `MigrationPrompt` | builds the constrained, JSON-only prompt |
@@ -46,11 +47,26 @@ SqlDelightFormStore(db, registry)  ── reads now apply the validated transfor
 
 ## Status
 
-- ✅ Core pipeline + Android `MediaPipeLlmEngine` (14 tests green via `testDebugUnitTest`).
-- ⬜ **iOS engine** — an `LlmEngine` impl (llama.cpp via cinterop, or Foundation Models). The module
-  already compiles for iOS; only a concrete engine is missing.
-- ⬜ Model provisioning helper (bundle/download the `.task` model to device storage).
+- ✅ Core pipeline + Android `MediaPipeLlmEngine` (15 tests green via `testDebugUnitTest`).
+- ✅ **iOS engine** — `SwiftLlmEngine` bridges to a Swift-supplied generator. All modules
+  compile + link for iOS native; common tests pass on the iOS simulator.
+- ⬜ Model provisioning helper (bundle/download the model to device storage).
 - ⬜ Richer `TransformSpec` ops (concat/split, value maps) as real migrations demand them.
+
+## iOS usage (sketch)
+
+The model lives on the Swift side; Kotlin owns the pipeline. The iOS app injects a generator:
+
+```swift
+MainViewControllerKt.MainViewController { prompt, onResult, onError in
+    Task {
+        do {
+            let session = LanguageModelSession()              // Apple Foundation Models (iOS 26+)
+            onResult(try await session.respond(to: prompt).content)
+        } catch { onError(KotlinThrowable(message: "\(error)")) }
+    }
+}
+```
 
 ## Android usage (sketch)
 

@@ -104,6 +104,7 @@ Generates the ambiguous transforms (renames, backfills) using an on-device LLM.
 ### `LlmEngine`
 `fun interface { suspend fun generate(prompt): String }`. The only platform-specific dependency.
 - **`MediaPipeLlmEngine(context, modelPath, maxTokens)`** (Android): on-device inference via `com.google.mediapipe:tasks-genai`. `close()` releases native resources.
+- **`SwiftLlmEngine(generator)`** (iOS): bridges to a Swift completion-handler closure, so the Swift app owns the model (Foundation Models / MLX / llama.cpp). Inject via the `MainViewController(llmGenerate:)` overload.
 
 ### `TransformSpec`
 The declarative migration the model emits (never code): `renames` (old→new), `drops`, `constants` (backfills). `toTransform()` interprets it into a `SemanticTransform`.
