@@ -4,6 +4,7 @@ import com.abyxcz.composeforms.persistence.FormValuesCodec
 import com.abyxcz.composeforms.persistence.fingerprint
 import com.abyxcz.v2core.core.model.form
 import kotlinx.coroutines.runBlocking
+import kotlinx.serialization.json.JsonNull
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.buildJsonObject
@@ -61,6 +62,19 @@ class LlmMigratorTest {
 
         assertNull(transform)
         assertEquals(2, engine.calls)
+    }
+
+    @Test
+    fun preservesCommonFieldThatIsEmpty() = runBlocking {
+        // 'note' is common to both schemas but null in the data — preservation, not non-nullness,
+        // is the rule, so the rename must still validate.
+        val fromTwo = form { section("s") { text("note"); text("phone_number") } }
+        val toTwo = form { section("s") { text("note"); text("phone") } }
+        val sampleTwo = buildJsonObject { put("note", JsonNull); put("phone_number", JsonPrimitive("555")) }
+        val engine = FakeLlmEngine(listOf("""{"renames":{"phone_number":"phone"}}"""))
+
+        assertNotNull(LlmMigrator(engine).prepare(fromTwo, toTwo, listOf(sampleTwo)))
+        Unit
     }
 
     @Test

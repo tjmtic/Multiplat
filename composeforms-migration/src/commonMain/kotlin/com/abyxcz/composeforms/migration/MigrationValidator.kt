@@ -3,7 +3,6 @@ package com.abyxcz.composeforms.migration
 import com.abyxcz.composeforms.persistence.FormValuesCodec
 import com.abyxcz.composeforms.persistence.SemanticTransform
 import com.abyxcz.v2core.core.model.FormSchema
-import kotlinx.serialization.json.JsonNull
 import kotlinx.serialization.json.JsonObject
 
 /**
@@ -12,13 +11,14 @@ import kotlinx.serialization.json.JsonObject
  *
  * A candidate is accepted only if, for every [samples] entry:
  *  - the migrated object decodes against [to] without throwing, AND
- *  - every field common to both schemas (by name) survives with a non-null value — i.e. no silent
- *    data loss for fields that clearly carry forward.
+ *  - every field common to both schemas (by name) is PRESERVED unchanged — i.e. the transform
+ *    must not drop or rewrite data that clearly carries forward. (A legitimately-null value is
+ *    preserved as null; the test is equality with the source, not non-nullness.)
  *
- * Note the inherent limit: a field that is renamed across *all* of its identity (present in neither
+ * Inherent limit: a field renamed across all of its identity (present in neither schema's
  * intersection) is indistinguishable from a drop+add, so a wrong rename of that kind cannot be
- * rejected here — the model's choice is trusted for those. Common-field loss and decode failures are
- * what this catches.
+ * rejected here — the model's choice is trusted for those. Common-field loss and decode failures
+ * are what this catches.
  */
 class MigrationValidator {
     fun validate(
@@ -33,10 +33,7 @@ class MigrationValidator {
             runCatching {
                 val migrated = transform.apply(sample)
                 FormValuesCodec.decode(to, migrated) // must not throw on the target shape
-                mustSurvive.all { name ->
-                    val value = migrated[name]
-                    value != null && value !is JsonNull
-                }
+                mustSurvive.all { name -> migrated[name] == sample[name] }
             }.getOrDefault(false)
         }
     }
