@@ -63,3 +63,63 @@ A pre-configured button that:
 - **`RequiredRule(message)`**: Ensures a field is not null or blank.
 - **`MinLengthRule(min, message)`**: Ensures a string meets a minimum length.
 - **`ValidationRule<T>`**: Interface for creating custom rules. Implement `validate(value: T?): String?`.
+
+---
+
+## 💾 Persistence API Reference (`:composeforms-persistence` module)
+
+Stores form objects as a JSON envelope and reconciles them to the current schema on read.
+
+### `FormStore`
+The persistence port. Reads require the current `FormSchema` (it supplies types and defaults).
+- **`put(key, schema, values)`**: Persist a `FormState` snapshot (`Map<String, Any?>`).
+- **`get(key, schema)`**: Load one object, reconciled + coerced to `schema` (or null).
+- **`getByType(type, schema)`**: Load every object of a type.
+- **`delete(key)`**: Remove an object.
+
+### `ObjectKey(type, id)`
+Stable identity for a stored instance — `type` is the object kind, `id` the instance.
+
+### `createFormStore(factory, transforms)` / `DriverFactory`
+Builds a SQLDelight-backed `FormStore`. `DriverFactory(context)` on Android, `DriverFactory()` on iOS. `transforms` defaults to `TransformRegistry.Empty`.
+
+### `InMemoryFormStore(transforms)`
+Reference store with identical behavior — for tests, previews, and ephemeral caches.
+
+### `FormSchema.fingerprint()`
+A stable, order-independent structural hash (field name + kind) — the *implicit type version* used as `schemaVersion`.
+
+### `FormValuesCodec`
+`encode(schema, values)` → JSON; `decode(schema, json)` → reconciled map (added field → default, removed field → dropped, dropdowns by stable option key).
+
+### `SemanticTransform` / `TransformRegistry`
+`SemanticTransform` maps stored JSON to JSON valid for the target schema. `TransformRegistry.find(fromVersion, toVersion)` returns one (or null for a pure reconcile). `TransformRegistry.Empty` is the default.
+
+---
+
+## 🤖 Migration API Reference (`:composeforms-migration` module)
+
+Generates the ambiguous transforms (renames, backfills) using an on-device LLM.
+
+### `LlmEngine`
+`fun interface { suspend fun generate(prompt): String }`. The only platform-specific dependency.
+- **`MediaPipeLlmEngine(context, modelPath, maxTokens)`** (Android): on-device inference via `com.google.mediapipe:tasks-genai`. `close()` releases native resources.
+
+### `TransformSpec`
+The declarative migration the model emits (never code): `renames` (old→new), `drops`, `constants` (backfills). `toTransform()` interprets it into a `SemanticTransform`.
+
+### `diffSchemas(from, to)` → `SchemaDiff`
+Deterministic structural delta: `added`, `removed`, `kindChanged`, `unchanged`, `isEmpty`.
+
+### `MigrationPrompt.build(from, to)`
+Builds the constrained, JSON-only prompt from the diff.
+
+### `MigrationValidator`
+Sandbox safety gate. Accepts a candidate only if it decodes against the target and every field common to both schemas is **preserved** (no silent data loss). Never touches the live DB.
+
+### `LlmMigrator(engine, validator, maxAttempts)`
+- **`prepare(from, to, samples)`**: generate → parse → validate → retry; returns a `SemanticTransform` or null.
+- **`prepareInto(registry, from, to, samples)`**: as above, then registers the result. Returns whether one validated.
+
+### `CachingTransformRegistry`
+A `TransformRegistry` of validated transforms keyed by `(fromFingerprint, toFingerprint)`. `find` is a pure synchronous lookup, so the LLM never runs on the read path.
