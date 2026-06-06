@@ -3,6 +3,7 @@ package com.abyxcz.composeforms.ui.v2
 import androidx.compose.material3.Slider
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -31,6 +32,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import kotlin.math.roundToInt
 import androidx.compose.ui.unit.dp
 import com.abyxcz.v2core.core.model.CheckboxField
 import com.abyxcz.v2core.core.model.DropdownField
@@ -214,7 +216,20 @@ fun RenderSliderField(
     val error = context.errors.value[field.name]
 
     Column(modifier = Modifier.fillMaxWidth()) {
-        Text(text = field.label, style = MaterialTheme.typography.labelLarge)
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(text = field.label, style = MaterialTheme.typography.labelLarge)
+            // Show the current value so users can read/verify the exact setting. Rounded to an
+            // integer to match the discrete step positions (and how integer forms persist values).
+            Text(
+                text = value.roundToInt().toString(),
+                style = MaterialTheme.typography.labelLarge,
+                color = MaterialTheme.colorScheme.primary,
+            )
+        }
         Slider(
             value = value,
             onValueChange = {
