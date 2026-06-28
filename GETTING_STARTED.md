@@ -34,8 +34,15 @@ Run all unit tests across all modules (Android and iOS):
 ./gradlew test
 ```
 
+Per-module (fast JVM path) for the persistence and migration logic:
+```bash
+./gradlew :composeforms-persistence:testDebugUnitTest
+./gradlew :composeforms-migration:testDebugUnitTest
+```
+
 ### UI Tests
-Run the sample app on an emulator or physical device.
+Run the sample app on an emulator or physical device. The **OTA Migration Demo** tab walks
+through saving data, switching backend schema versions, and watching the data survive a rename.
 
 ---
 
@@ -48,7 +55,20 @@ When adding new fields to the `:composeforms` module:
 
 ---
 
+## 🤖 On-Device LLM (optional)
+
+The migration generator runs without any model out of the box — the sample app uses a
+`StubLlmEngine` that returns a canned transform. To run a **real** on-device model on Android:
+
+1. Provision a MediaPipe-compatible `.task` model (e.g. a quantized Gemma) onto the device
+   (bundle as an asset and copy to internal storage, or download).
+2. Pass `MediaPipeLlmEngine(context, modelPath)` to `LlmMigrator` instead of `StubLlmEngine`.
+
+The `:composeforms-persistence` and `:composeforms-migration` logic is fully testable on the JVM
+with no model or device required.
+
 ## 📦 Usage Example
 
 For a quick reference on how to use the DSL, see the [main README](README.md).
-Check out the sample code in `composeApp/src/commonMain/kotlin/com/abyxcz/multiplat/App.kt`.
+Check out the sample code in `composeApp/src/commonMain/kotlin/com/abyxcz/multiplat/App.kt`, and the
+end-to-end persistence + migration flow in `composeApp/src/commonMain/kotlin/com/abyxcz/multiplat/demo/`.

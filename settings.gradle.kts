@@ -28,4 +28,4 @@ dependencyResolutionManagement {
     }
 }
 
-include(":composeApp", ":composeforms")
+include(":composeApp", ":composeforms", ":composeforms-persistence", ":composeforms-migration")

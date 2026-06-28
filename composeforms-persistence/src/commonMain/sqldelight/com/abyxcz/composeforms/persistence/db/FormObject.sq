@@ -1,0 +1,26 @@
+-- The single fixed table in the system: a JSON envelope per form-object instance.
+-- Structural schema evolution happens inside `json` (reconciled on read against the
+-- current FormSchema), never via ALTER on this table.
+CREATE TABLE form_object (
+    type           TEXT    NOT NULL,
+    id             TEXT    NOT NULL,
+    schema_version TEXT    NOT NULL,
+    json           TEXT    NOT NULL,
+    updated_at     INTEGER NOT NULL,
+    PRIMARY KEY (type, id)
+);
+
+CREATE INDEX form_object_type ON form_object(type);
+
+upsert:
+INSERT OR REPLACE INTO form_object(type, id, schema_version, json, updated_at)
+VALUES (?, ?, ?, ?, ?);
+
+selectOne:
+SELECT * FROM form_object WHERE type = ? AND id = ?;
+
+selectByType:
+SELECT * FROM form_object WHERE type = ?;
+
+deleteOne:
+DELETE FROM form_object WHERE type = ? AND id = ?;

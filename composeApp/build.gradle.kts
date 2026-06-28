@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
+    alias(libs.plugins.kotlinSerialization)
 }
 
 kotlin {
@@ -32,6 +33,9 @@ kotlin {
         }
         commonMain.dependencies {
             implementation(project(":composeforms"))
+            implementation(project(":composeforms-persistence"))
+            implementation(project(":composeforms-migration"))
+            implementation(libs.kotlinx.serialization.json)
             implementation(compose.runtime)
             implementation(compose.foundation)
             implementation(compose.material3)
